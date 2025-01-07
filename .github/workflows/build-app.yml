@@ -63,8 +63,8 @@ jobs:
         with:
           name: ${{ github.event.repository.name }}-${{ matrix.architecture }}
           path: |
-            target/x86_64-pc-windows-msvc/release/bundle/msi/*.exe
-            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
         if: ${{ matrix.architecture == 'x64' }}
 
       - name: Upload build artifacts for i686
@@ -72,6 +72,6 @@ jobs:
         with:
           name: ${{ github.event.repository.name }}-${{ matrix.architecture }}
           path: |
-            target/i686-pc-windows-msvc/release/bundle/msi/*.exe
-            target/i686-pc-windows-msvc/release/bundle/nsis/*.exe
+            src-tauri/target/i686-pc-windows-msvc/release/bundle/msi/*.msi
+            src-tauri/target/i686-pc-windows-msvc/release/bundle/nsis/*.exe
         if: ${{ matrix.architecture == 'x86' }}
