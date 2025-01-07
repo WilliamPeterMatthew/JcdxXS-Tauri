@@ -1,0 +1,67 @@
+name: Build App
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        architecture: [x64, x86]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Rust
+        uses: actions/setup-rust@v1
+        with:
+          rust-version: 1.77.2
+          architecture: ${{ matrix.architecture }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+          architecture: ${{ matrix.architecture }}
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Build Tauri app for x64
+        run: |
+          rustup target add x86_64-pc-windows-msvc
+          npm run tauri build -- --target x86_64-pc-windows-msvc
+        if: ${{ matrix.architecture == 'x64' }}
+      
+      - name: Build Tauri app for i686
+        run: |
+          rustup target add i686-pc-windows-msvc
+          npm run tauri build -- --target i686-pc-windows-msvc
+        if: ${{ matrix.architecture == 'x86' }}
+
+      - name: Upload build artifacts for x64
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.repository.name }}-${{ matrix.architecture }}
+          path: |
+            target/x86_64-pc-windows-msvc/release/bundle/msi/*.exe
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+        if: ${{ matrix.architecture == 'x64' }}
+
+      - name: Upload build artifacts for i686
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.repository.name }}-${{ matrix.architecture }}
+          path: |
+            target/i686-pc-windows-msvc/release/bundle/msi/*.exe
+            target/i686-pc-windows-msvc/release/bundle/nsis/*.exe
+        if: ${{ matrix.architecture == 'x86' }}
