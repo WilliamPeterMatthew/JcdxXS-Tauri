@@ -20,11 +20,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Rust
-        uses: actions/setup-rust@v1
+      - name: Set up Rust for x64
+        uses: dtolnay/rust-toolchain@stable
         with:
-          rust-version: 1.77.2
-          architecture: ${{ matrix.architecture }}
+          profile: minimal
+          toolchain: 1.77.2
+          target: 'x86_64-pc-windows-msvc'
+        if: ${{ matrix.architecture == 'x64' }}
+
+      - name: Set up Rust for i686
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          profile: minimal
+          toolchain: 1.77.2
+          target: 'i686-pc-windows-msvc'
+        if: ${{ matrix.architecture == 'x86' }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
